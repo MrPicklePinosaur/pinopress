@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+
+SITEURL := https://blog.danieliu.xyz
+
+.PHONY: help build clean
+
+# internal variables
+TEMPLATE_DIR := templates
+BUILD_DIR := build
+ARTICLE_DIR := articles
+
+ARTICLE_LIST := $(basename $(shell ls $(ARTICLE_DIR)))
+
+help:
+	@echo 'pinopress help|build|clean'
+
+build:
+	@echo 'building...'
+
+clean:
+	@echo 'cleaning...'
