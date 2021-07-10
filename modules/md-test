@@ -28,6 +28,18 @@ ___bold italic text___
 \***should be strong**\*
 \*\**should be emph*\*\*
 
+~~this is incorrect text~~
+~~~~
+\~~this should not be strikethrough\~~
+
 `inline code`
 ``
 \`escaped backtick\`
+
+<!-- this is a comment -->
+<!---->
+<!-- --> text after 
+
+---
+----
+    ---------     

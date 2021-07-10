@@ -4,10 +4,18 @@
 ## based off https://github.com/stamby/md-to-html
 # input $1 - filepath to html file
 
+# parse header of document
+
+# html style comments
+s/<!--(.*)-->//g
+
 # special html characters
 s/\&/\&amp\;/g
 s/</\&lt\;/g
 s/>/\&gt\;/g
+
+# horizontal rule
+s/^\s*-{3,}\s*$/<hr\/>/
 
 # inline styles
 s/(^|[^\\\*])\*{3}([^\*]+)\*{3}([^\*]|$)/\1<strong><em>\2<\/em><\/strong>\3/g
@@ -17,8 +25,9 @@ s/(^|[^\\_])_{2}([^\_]+)_{2}([^_]|$)/\1<strong>\2<\/strong>\3/g
 s/(^|[^\\\*])\*([^\*]+)\*([^\*]|$)/\1<em>\2<\/em>\3/g
 s/(^|[^\\_])_([^_]+)_([^_]|$)/\1<em>\2<\/em>\3/g
 s/(^|[^\\`])`([^`]+)`([^`]|$)/\1<code>\2<\/code>\3/g
+s/(^|[^\\~])~{2}([^~]+)~{2}([^~]|$)/\1<del>\2<\/del>\3/g
 
-# img
+# images
 s/!\[(.*)\]\((.*)\)/<img src="\2" alt="\1"\/>/g
 
 # links
@@ -26,10 +35,18 @@ s/\[(.*)\]\((.*)\)/<a href="\1">\2<\/a>/g
 s/\[(.*)\]/<a href="\1">\1<\/a>/g
 
 # headers
+s/^#{6} (.*)/<h6>\1<\/h6>/
+s/^#{5} (.*)/<h5>\1<\/h5>/
 s/^#{4} (.*)/<h4>\1<\/h4>/
 s/^#{3} (.*)/<h3>\1<\/h3>/
 s/^#{2} (.*)/<h2>\1<\/h2>/
 s/^#} (.*)/<h1>\1<\/h1>/
 
-# html style comments
+# code block
+
+# paragraphs
+
+# /./{H;$!d} ; x ; s/^/\n<p>/ ; s/$/\n<\/p>/
+
+
 
