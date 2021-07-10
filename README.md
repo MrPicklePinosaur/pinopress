@@ -1,4 +1,4 @@
-# Pinopress
+# pinopress
 
 **pinopress** is a modular makefile based static blog generator. that means you run the build script once and every page is generated beforehand.
 
