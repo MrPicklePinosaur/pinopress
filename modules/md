@@ -4,10 +4,11 @@
 ## based off https://github.com/stamby/md-to-html
 # input $1 - filepath to html file
 
-# parse header of document
+# remove document meta
+/^-- \w+: .+$/d
 
 # html style comments
-s/<!--(.*)-->//g
+/<!--(.*)-->/d
 
 # special html characters
 s/\&/\&amp\;/g

@@ -1,4 +1,4 @@
-#!/usr/bin/make -f
+#!/usr/bin/make -sf
 
 SITEURL := https://blog.danieliu.xyz
 
@@ -7,15 +7,36 @@ SITEURL := https://blog.danieliu.xyz
 # internal variables
 TEMPLATE_DIR := templates
 BUILD_DIR := build
-ARTICLE_DIR := articles
+SRC_DIR := articles
+MODULE_DIR := modules
 
-ARTICLE_LIST := $(basename $(shell ls $(ARTICLE_DIR)))
+ARTICLE_PATH := $(BUILD_DIR)/article
+
+ARTICLE_LIST := $(basename $(shell ls $(SRC_DIR)))
 
 help:
-	@echo 'pinopress help|build|clean'
+	echo 'pinopress help|build|clean'
 
-build:
-	@echo 'building...'
+build: $(BUILD_DIR)/rolling.html $(BUILD_DIR)/archive.html $(ARTICLE_PATH)/$(addsuffix .html,$(ARTICLE_LIST))
+	echo 'building...'
+
+$(BUILD_DIR)/rolling.html:
+	echo 'building rolling file'
+	cat $(TEMPLATE_DIR)/head.template.html $(TEMPLATE_DIR)/rollingbody.template.html $(TEMPLATE_DIR)/foot.template.html > "$@"
+
+$(BUILD_DIR)/archive.html:
+	echo 'building archive file'
+	cat $(TEMPLATE_DIR)/head.template.html $(TEMPLATE_DIR)/archivebody.template.html $(TEMPLATE_DIR)/foot.template.html > "$@"
+
+$(ARTICLE_PATH)/%.html: articles/%.md
+	echo 'parsing $^'
+	cat $(TEMPLATE_DIR)/head.template.html > "$@"
+	# module pipeline starts here
+	./$(MODULE_DIR)/md "$^" >> "$@"
+	# module pipeline ends here
+	cat $(TEMPLATE_DIR)/foot.template.html >> "$@"
 
 clean:
-	@echo 'cleaning...'
+	echo 'cleaning...'
+	rm $(BUILD_DIR)/rolling.html $(BUILD_DIR)/archive.html $(ARTICLE_PATH)/*
+
