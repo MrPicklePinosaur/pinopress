@@ -6,7 +6,7 @@ built in features include markdown generated blog articles, and a rss feed.
 
 ## templates
 
-templates are html snippets that you can customize. these templates are then pieced together to form the final html page. **pinopress** makes extensive use of **gnu envsubst** so in each template, you can use variables that will be substituted in on build.
+templates are html snippets that you can customize. these templates are then pieced together to form the final html page. edit them to your liking. they can be found in the `templates/` directory.
 
 ## modules
 
@@ -19,4 +19,23 @@ here are some potential ideas for modules:
 ## pinopress flavored markdown
 
 pinopress articles are written in an enhanced version of markdown. specification coming soon.
+
+## variables
+
+ **pinopress** makes extensive use of **gnu envsubst** so in each template, you can use variables that will be substituted in on build. variables can be used in both templates and blog articles. Here's a list of some that you can use:
+
+### global
+
+`$SITEURL` - the SITEURL variable you set in the pinopress config
+`$USERVAR1` - global variable you can use however you want
+`$USERVAR2` - a second user defined global variable
+
+### article only
+
+`$ARTICLE_TITLE` - title of article, as set in article header
+`$PUBLISHED_DATE` - the date/time the article was published, as set in the article header
+
+## mounts
+
+coming soon...
 

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+## module to read meta in header of md file
+## usage: 
+##      md-header [md_filepath] [header_name]
+
+[ "$#" -ne 2 ] && { echo "Incorrect usage"; exit 1; }
+
+propname=""
+case "$2" in
+    name) propname=name;;
+    published) propname=published;;
+    tags) propname=tags;;
+    *) exit 1;;
+esac
+
+sed -nE "s/^-- ${propname}: (.*)$/\1/p" "$1"

@@ -1,6 +1,8 @@
 #!/usr/bin/make -sf
 
 SITEURL := https://blog.danieliu.xyz
+USERVAR1 :=
+USERVAR2 :=
 
 .PHONY: help build clean
 
@@ -11,30 +13,46 @@ SRC_DIR := articles
 MODULE_DIR := modules
 
 ARTICLE_PATH := $(BUILD_DIR)/article
-
 ARTICLE_LIST := $(basename $(shell ls $(SRC_DIR)))
+
+# some helper functions
+define export_common
+	export SITEURL="$(SITEURL)"
+	export USERVAR1="$(USERVAR1)"
+	export USERVAR2="$(USERVAR2)"
+endef
 
 help:
 	echo 'pinopress help|build|clean'
 
 build: $(BUILD_DIR)/rolling.html $(BUILD_DIR)/archive.html $(ARTICLE_PATH)/$(addsuffix .html,$(ARTICLE_LIST))
-	echo 'building...'
 
+.ONESHELL:
 $(BUILD_DIR)/rolling.html:
 	echo 'building rolling file'
+	$(export_common)
 	cat $(TEMPLATE_DIR)/head.template.html $(TEMPLATE_DIR)/rollingbody.template.html $(TEMPLATE_DIR)/foot.template.html > "$@"
+	envsubst < "$@" | sponge "$@"
 
+.ONESHELL:
 $(BUILD_DIR)/archive.html:
 	echo 'building archive file'
+	$(export_common)
 	cat $(TEMPLATE_DIR)/head.template.html $(TEMPLATE_DIR)/archivebody.template.html $(TEMPLATE_DIR)/foot.template.html > "$@"
+	envsubst < "$@" | sponge "$@"
 
+.ONESHELL:
 $(ARTICLE_PATH)/%.html: articles/%.md
 	echo 'parsing $^'
+	$(export_common)
+	export ARTICLE_TITLE="$(shell ./$(MODULE_DIR)/md-header "$<" name)"
+	export PUBLISHED_DATE="$(shell ./$(MODULE_DIR)/md-header "$<" published)"
 	cat $(TEMPLATE_DIR)/head.template.html > "$@"
 	# module pipeline starts here
 	./$(MODULE_DIR)/md "$^" >> "$@"
 	# module pipeline ends here
 	cat $(TEMPLATE_DIR)/foot.template.html >> "$@"
+	envsubst < "$@" | sponge "$@"
 
 clean:
 	echo 'cleaning...'

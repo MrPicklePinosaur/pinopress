@@ -2,7 +2,8 @@
 
 ## markdown to html module for pinopress
 ## based off https://github.com/stamby/md-to-html
-# input $1 - filepath to html file
+## usage:
+##      md [md_filepath]
 
 # remove document meta
 /^-- \w+: .+$/d
