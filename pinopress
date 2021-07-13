@@ -1,5 +1,9 @@
 #!/usr/bin/make -sf
 
+## pinopress - the simple static blog generator
+## dependencies: sponge
+
+# user variables
 SITEURL := https://blog.danieliu.xyz
 USERVAR1 :=
 USERVAR2 :=
@@ -12,7 +16,7 @@ BUILD_DIR := build
 SRC_DIR := articles
 MODULE_DIR := modules
 
-ARTICLE_PATH := $(BUILD_DIR)/article
+ARTICLE_PATH := article
 ARTICLE_LIST := $(basename $(shell ls $(SRC_DIR)))
 
 # some helper functions
@@ -22,16 +26,28 @@ define export_common
 	export USERVAR2="$(USERVAR2)"
 endef
 
+# usage: export_article [input md]
+define export_article
+	export ARTICLE_TITLE=`./$(MODULE_DIR)/md-header "$(1)" name`
+	export PUBLISHED_DATE=`./$(MODULE_DIR)/md-header "$(1)" published`
+	# vvv this is sorta ugly vvv
+	export ARTICLE_URL="$(SITEURL)/$(ARTICLE_PATH)/$(subst .md,.html,$(notdir "$(1)"))"
+endef
+
 help:
 	echo 'pinopress help|build|clean'
 
-build: $(BUILD_DIR)/rolling.html $(BUILD_DIR)/archive.html $(ARTICLE_PATH)/$(addsuffix .html,$(ARTICLE_LIST))
+build: $(BUILD_DIR)/rolling.html $(BUILD_DIR)/archive.html $(addprefix $(BUILD_DIR)/$(ARTICLE_PATH)/,$(addsuffix .html,$(ARTICLE_LIST)))
 
 .ONESHELL:
 $(BUILD_DIR)/rolling.html:
 	echo 'building rolling file'
 	$(export_common)
 	cat $(TEMPLATE_DIR)/head.template.html $(TEMPLATE_DIR)/rollingbody.template.html $(TEMPLATE_DIR)/foot.template.html > "$@"
+	for article_file in `ls $(SRC_DIR)`; do
+		$(call export_article,"$(SRC_DIR)/$$article_file")
+		envsubst < $(TEMPLATE_DIR)/rollingitem.template.html | sed -i "/<!-- ROLLING_ITEMS -->/r /dev/stdin" "$@"
+	done
 	envsubst < "$@" | sponge "$@"
 
 .ONESHELL:
@@ -42,11 +58,10 @@ $(BUILD_DIR)/archive.html:
 	envsubst < "$@" | sponge "$@"
 
 .ONESHELL:
-$(ARTICLE_PATH)/%.html: articles/%.md
-	echo 'parsing $^'
+$(BUILD_DIR)/$(ARTICLE_PATH)/%.html: $(SRC_DIR)/%.md
+	echo "parsing $<"
 	$(export_common)
-	export ARTICLE_TITLE="$(shell ./$(MODULE_DIR)/md-header "$<" name)"
-	export PUBLISHED_DATE="$(shell ./$(MODULE_DIR)/md-header "$<" published)"
+	$(call export_article,"$<")
 	cat $(TEMPLATE_DIR)/head.template.html > "$@"
 	# module pipeline starts here
 	./$(MODULE_DIR)/md "$^" >> "$@"
@@ -56,5 +71,5 @@ $(ARTICLE_PATH)/%.html: articles/%.md
 
 clean:
 	echo 'cleaning...'
-	rm $(BUILD_DIR)/rolling.html $(BUILD_DIR)/archive.html $(ARTICLE_PATH)/*
+	rm $(BUILD_DIR)/rolling.html $(BUILD_DIR)/archive.html $(BUILD_DIR)/$(ARTICLE_PATH)/*
 

@@ -6,7 +6,16 @@ built in features include markdown generated blog articles, and a rss feed.
 
 ## templates
 
-templates are html snippets that you can customize. these templates are then pieced together to form the final html page. edit them to your liking. they can be found in the `templates/` directory.
+templates are html snippets that you can customize. these templates are then pieced together to form the final html page. edit them to your liking. they can be found in the `templates/` directory. Here's a brief description of each one:
+
+template          | description
+------------------|-----------
+head              | html before body
+foot              | html after body
+archivebody       | everything inside body of archive page
+archiveitem       | 
+rollingbody       | everything inside body of rolling page
+rollingitem       |
 
 ## modules
 
@@ -27,12 +36,15 @@ pinopress articles are written in an enhanced version of markdown. specification
 ### global
 
 `$SITEURL` - the SITEURL variable you set in the pinopress config
+
 `$USERVAR1` - global variable you can use however you want
+
 `$USERVAR2` - a second user defined global variable
 
 ### article only
 
 `$ARTICLE_TITLE` - title of article, as set in article header
+
 `$PUBLISHED_DATE` - the date/time the article was published, as set in the article header
 
 ## mounts
