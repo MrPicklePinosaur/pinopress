@@ -1,0 +1,9 @@
+<item>
+<title>$ARTICLE_TITLE</title>
+<link>$ARTICLE_URL</link>
+<description>
+<![CDATA[
+    $DESCRIPTION
+]]>
+</description>
+</item>

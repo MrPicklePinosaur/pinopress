@@ -37,9 +37,9 @@ pinopress articles are written in an enhanced version of markdown. specification
 
 `$SITEURL` - the SITEURL variable you set in the pinopress config
 
-`$USERVAR1` - global variable you can use however you want
+`$USERGLOBAL1` - global variable you can use however you want
 
-`$USERVAR2` - a second user defined global variable
+`$USERGLOBAL2` - a second user defined global variable
 
 ### article only
 
@@ -47,7 +47,13 @@ pinopress articles are written in an enhanced version of markdown. specification
 
 `$PUBLISHED_DATE` - the date/time the article was published, as set in the article header
 
+`$DESCRIPTION` - brief description of the blog post
+
+`$USERLOCAL1` - article specific variable you can use for whatever you want
+
+`$USERLOCAL2` - another user local variable
+
 ## mounts
 
-coming soon...
+many times, you would like to display a list of html elements somewhere in the page. **pinopress** solves this using mounts. mounts are simply comments that tell pinopress where to append template items.
 

@@ -11,6 +11,9 @@ case "$2" in
     name) propname=name;;
     published) propname=published;;
     tags) propname=tags;;
+    description) propname=description;;
+    userlocal1) propname=userlocal1;;
+    userlocal2) propname=userlocal2;;
     *) exit 1;;
 esac
 

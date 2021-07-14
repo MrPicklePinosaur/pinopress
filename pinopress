@@ -5,8 +5,8 @@
 
 # user variables
 SITEURL := https://blog.danieliu.xyz
-USERVAR1 :=
-USERVAR2 :=
+USERGLOBAL1 :=
+USERGLOBAL2 :=
 
 .PHONY: help build clean
 
@@ -22,32 +22,40 @@ ARTICLE_LIST := $(basename $(shell ls $(SRC_DIR)))
 # some helper functions
 define export_common
 	export SITEURL="$(SITEURL)"
-	export USERVAR1="$(USERVAR1)"
-	export USERVAR2="$(USERVAR2)"
+	export USERGLOBAL1="$(USERGLOBAL1)"
+	export USERGLOBAL2="$(USERGLOBAL2)"
 endef
 
 # usage: export_article [input md]
 define export_article
 	export ARTICLE_TITLE=`./$(MODULE_DIR)/md-header "$(1)" name`
 	export PUBLISHED_DATE=`./$(MODULE_DIR)/md-header "$(1)" published`
+	export DESCRIPTION=`./$(MODULE_DIR)/md-header "$(1)" description`
+	export USERLOCAL1=`./$(MODULE_DIR)/md-header "$(1)" userlocal1`
+	export USERLOCAL2=`./$(MODULE_DIR)/md-header "$(1)" userlocal2`
 	# vvv this is sorta ugly vvv
 	export ARTICLE_URL="$(SITEURL)/$(ARTICLE_PATH)/$(subst .md,.html,$(notdir "$(1)"))"
+endef
+
+# usage: loop_article [dest] [template_filename]
+define loop_article
+	for article_file in `ls $(SRC_DIR)`; do
+		$(call export_article,"$(SRC_DIR)/$$article_file")
+		envsubst < $(TEMPLATE_DIR)/$(2) | sed -i "/<!-- $(shell echo $(addprefix mount_,$(basename $(basename $(2)))) | tr '[:lower:]' '[:upper:]') -->/r /dev/stdin" "$(1)"
+	done
 endef
 
 help:
 	echo 'pinopress help|build|clean'
 
-build: $(BUILD_DIR)/rolling.html $(BUILD_DIR)/archive.html $(addprefix $(BUILD_DIR)/$(ARTICLE_PATH)/,$(addsuffix .html,$(ARTICLE_LIST)))
+build: $(BUILD_DIR)/rolling.html $(BUILD_DIR)/archive.html $(BUILD_DIR)/feed.xml $(addprefix $(BUILD_DIR)/$(ARTICLE_PATH)/,$(addsuffix .html,$(ARTICLE_LIST)))
 
 .ONESHELL:
 $(BUILD_DIR)/rolling.html:
 	echo 'building rolling file'
 	$(export_common)
 	cat $(TEMPLATE_DIR)/head.template.html $(TEMPLATE_DIR)/rollingbody.template.html $(TEMPLATE_DIR)/foot.template.html > "$@"
-	for article_file in `ls $(SRC_DIR)`; do
-		$(call export_article,"$(SRC_DIR)/$$article_file")
-		envsubst < $(TEMPLATE_DIR)/rollingitem.template.html | sed -i "/<!-- ROLLING_ITEMS -->/r /dev/stdin" "$@"
-	done
+	$(call loop_article,"$@",rollingitem.template.html)
 	envsubst < "$@" | sponge "$@"
 
 .ONESHELL:
@@ -55,6 +63,15 @@ $(BUILD_DIR)/archive.html:
 	echo 'building archive file'
 	$(export_common)
 	cat $(TEMPLATE_DIR)/head.template.html $(TEMPLATE_DIR)/archivebody.template.html $(TEMPLATE_DIR)/foot.template.html > "$@"
+	$(call loop_article,"$@",archiveitem.template.html)
+	envsubst < "$@" | sponge "$@"
+
+.ONESHELL:
+$(BUILD_DIR)/feed.xml:
+	echo 'building feed file'
+	$(export_common)
+	cat $(TEMPLATE_DIR)/feed.template.xml > "$@"
+	$(call loop_article,"$@",feeditem.template.xml)
 	envsubst < "$@" | sponge "$@"
 
 .ONESHELL:
@@ -71,5 +88,5 @@ $(BUILD_DIR)/$(ARTICLE_PATH)/%.html: $(SRC_DIR)/%.md
 
 clean:
 	echo 'cleaning...'
-	rm $(BUILD_DIR)/rolling.html $(BUILD_DIR)/archive.html $(BUILD_DIR)/$(ARTICLE_PATH)/*
+	rm $(BUILD_DIR)/rolling.html $(BUILD_DIR)/archive.html $(BUILD_DIR)/feed.xml $(BUILD_DIR)/$(ARTICLE_PATH)/*
 
