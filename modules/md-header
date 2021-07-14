@@ -2,19 +2,19 @@
 
 ## module to read meta in header of md file
 ## usage: 
-##      md-header [md_filepath] [header_name]
+##      md-header [md_filepath]
 
-[ "$#" -ne 2 ] && { echo "Incorrect usage"; exit 1; }
+[ "$#" -ne 1 ] && { echo "Incorrect usage"; exit 1; }
 
-propname=""
-case "$2" in
-    name) propname=name;;
-    published) propname=published;;
-    tags) propname=tags;;
-    description) propname=description;;
-    userlocal1) propname=userlocal1;;
-    userlocal2) propname=userlocal2;;
-    *) exit 1;;
-esac
+# usage: getprop [path] [prop]
+getprop() {
+    sed -nE "s/^-- $2: (.*)$/\1/p" "$1"
+}
 
-sed -nE "s/^-- ${propname}: (.*)$/\1/p" "$1"
+export ARTICLE_TITLE=`getprop "$1" name`
+export PUBLISHED_DATE=`getprop "$1" published`
+export DESCRIPTION=`getprop "$1" description`
+export USERLOCAL1=`getprop "$1" userlocal1`
+export USERLOCAL2=`getprop "$1" userlocal2`
+# this only works when this script is called from pinopress script, as it inherits the required env variables. careful with this one, it's a bit hacky
+export ARTICLE_URL="$SITEURL/$ARTICLE_PATH/$(echo $(basename "$1") | sed -e 's/\(.*\)\.html/\1\.md/')"

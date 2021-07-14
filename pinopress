@@ -22,25 +22,15 @@ ARTICLE_LIST := $(basename $(shell ls $(SRC_DIR)))
 # some helper functions
 define export_common
 	export SITEURL="$(SITEURL)"
+	export ARTICLE_PATH="$(ARTICLE_PATH)"
 	export USERGLOBAL1="$(USERGLOBAL1)"
 	export USERGLOBAL2="$(USERGLOBAL2)"
-endef
-
-# usage: export_article [input md]
-define export_article
-	export ARTICLE_TITLE=`./$(MODULE_DIR)/md-header "$(1)" name`
-	export PUBLISHED_DATE=`./$(MODULE_DIR)/md-header "$(1)" published`
-	export DESCRIPTION=`./$(MODULE_DIR)/md-header "$(1)" description`
-	export USERLOCAL1=`./$(MODULE_DIR)/md-header "$(1)" userlocal1`
-	export USERLOCAL2=`./$(MODULE_DIR)/md-header "$(1)" userlocal2`
-	# vvv this is sorta ugly vvv
-	export ARTICLE_URL="$(SITEURL)/$(ARTICLE_PATH)/$(subst .md,.html,$(notdir "$(1)"))"
 endef
 
 # usage: loop_article [dest] [template_filename]
 define loop_article
 	for article_file in `ls $(SRC_DIR)`; do
-		$(call export_article,"$(SRC_DIR)/$$article_file")
+		. ./$(MODULE_DIR)/md-header "$(SRC_DIR)/$$article_file"
 		envsubst < $(TEMPLATE_DIR)/$(2) | sed -i "/<!-- $(shell echo $(addprefix mount_,$(basename $(basename $(2)))) | tr '[:lower:]' '[:upper:]') -->/r /dev/stdin" "$(1)"
 	done
 endef
