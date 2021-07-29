@@ -6,15 +6,52 @@
 ##      md [md_filepath]
 
 # remove document meta
-/^-- \w+: .+$/d
-
-# html style comments
-/<!--(.*)-->/d
+## matches block of -- at top of file
+1,/^([^-]|-[^-]|^$)/ {
+    /^([^-]|-[^-]|^$)/ !{
+        /^-- ?/d
+    }
+}
 
 # special html characters
 s/\&/\&amp\;/g
 s/</\&lt\;/g
 s/>/\&gt\;/g
+
+# code blocks
+/^ *```/ {
+    x
+    # check if hold space contains READING
+    # this is to see if this is the first ``` we read or no
+    /^ *READING/ !{
+        # if it is the first one, add READING to hold space
+        s/.*/READING/
+        x
+        # write opening tag
+        s/.*/<code>/
+        b
+    }
+    # if its the second ```, we are done
+    # first clear hold
+    s/.*//
+    x
+    # then write closing tag
+    s/.*/<\\code>/
+}
+
+# if we aren't reading ```, but hold space has READING in it
+# that means we are currently processing a block, just ignore and
+# keep going
+x
+/^ *READING/ {
+    x
+    b
+}
+x
+
+
+# html style comments
+/<!--(.*)-->/d
 
 # horizontal rule
 s/^\s*-{3,}\s*$/<hr\/>/
@@ -43,8 +80,6 @@ s/^#{4} (.*)/<h4>\1<\/h4>/
 s/^#{3} (.*)/<h3>\1<\/h3>/
 s/^#{2} (.*)/<h2>\1<\/h2>/
 s/^#} (.*)/<h1>\1<\/h1>/
-
-# code block
 
 # paragraphs
 
