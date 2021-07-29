@@ -73,6 +73,7 @@ $(BUILD_DIR)/$(ARTICLE_PATH)/%.html: $(SRC_DIR)/%.md
 	cat $(TEMPLATE_DIR)/head.template.html > "$@"
 	# module pipeline starts here
 	./$(MODULE_DIR)/md "$^" >> "$@"
+	. ./$(MODULE_DIR)/readingtime "$^"
 	# module pipeline ends here
 	cat $(TEMPLATE_DIR)/foot.template.html >> "$@"
 	envsubst < "$@" | sponge "$@"

@@ -24,7 +24,7 @@ these have not been implemented yet, but modules are shellscripts that are calle
 
 here are some potential ideas for modules:
 - [ ] syntax highlight for code blocks
-- [ ] blog average time to read
+- [x] blog average time to read
 
 ## pinopress flavored markdown
 
