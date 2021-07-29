@@ -1,6 +1,7 @@
 # pinopress
 
 **pinopress** is a modular makefile based static blog generator. that means you run the build script once and every page is generated beforehand.
+**pinopress** also focuses on extensibility, you can hook your own shell scripts into the build process to easily add any new features.
 
 built in features include markdown generated blog articles, and a rss feed.
 
