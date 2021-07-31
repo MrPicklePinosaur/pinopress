@@ -8,6 +8,8 @@ SITEURL := https://blog.danieliu.xyz
 USERGLOBAL1 :=
 USERGLOBAL2 :=
 
+include config.mk
+
 .PHONY: help build clean
 
 # internal variables
@@ -69,11 +71,11 @@ $(BUILD_DIR)/$(ARTICLE_PATH)/%.html: $(SRC_DIR)/%.md
 	echo "parsing $<"
 	$(export_common)
 	$(call export_article,"$<")
-	. ./$(MODULE_DIR)/md-header "$<"
 	cat $(TEMPLATE_DIR)/head.template.html > "$@"
 	# module pipeline starts here
-	./$(MODULE_DIR)/md "$^" >> "$@"
-	. ./$(MODULE_DIR)/readingtime "$^"
+	./$(MODULE_DIR)/md "$<" >> "$@"
+	. ./$(MODULE_DIR)/md-header "$<"
+	. ./$(MODULE_DIR)/readingtime "$<"
 	# module pipeline ends here
 	cat $(TEMPLATE_DIR)/foot.template.html >> "$@"
 	envsubst < "$@" | sponge "$@"

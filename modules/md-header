@@ -17,4 +17,4 @@ export DESCRIPTION=`getprop "$1" description`
 export USERLOCAL1=`getprop "$1" userlocal1`
 export USERLOCAL2=`getprop "$1" userlocal2`
 # this only works when this script is called from pinopress script, as it inherits the required env variables. careful with this one, it's a bit hacky
-export ARTICLE_URL="$SITEURL/$ARTICLE_PATH/$(echo $(basename "$1") | sed -e 's/\(.*\)\.html/\1\.md/')"
+export ARTICLE_URL="$SITEURL/$ARTICLE_PATH/$(echo $(basename "$1") | sed -e 's/\(.*\)\.md/\1\.html/')"

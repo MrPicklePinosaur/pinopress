@@ -1,0 +1,71 @@
+
+:root {
+
+    /* color scheme - one dark */
+    /* --black-normal:   #282C34; */
+    /* --black-bright:   #454C59; */
+    /* --red-normal:     #E06C75; */
+    /* --red-bright:     #FF7A85; */
+    /* --green-normal:   #98C379; */
+    /* --green-bright:   #B5E890; */
+    /* --yellow-normal:  #E5C07B; */
+    /* --yellow-bright:  #FFD68A; */
+    /* --blue-normal:    #61AFEF; */
+    /* --blue-bright:    #69BBFF; */
+    /* --magenta-normal: #C678DD; */
+    /* --magenta-bright: #E48AFF; */
+    /* --cyan-normal:    #56B6C2; */
+    /* --cyan-bright:    #66D9E8; */
+    /* --white-normal:   #ABB2BF; */
+    /* --white-bright:   #CFD7E6; */
+
+    /* color scheme - gruvbox */
+    --black-normal:   #282828;
+    --black-bright:   #3c3836;
+    --red-normal:     #cc241d;
+    --red-bright:     #fb4934;
+    --green-normal:   #98971a;
+    --green-bright:   #b8bb26;
+    --yellow-normal:  #d79921;
+    --yellow-bright:  #fabd2f;
+    --blue-normal:    #458588;
+    --blue-bright:    #83a598;
+    --magenta-normal: #b16286;
+    --magenta-bright: #d3869b;
+    --cyan-normal:    #689d6a;
+    --cyan-bright:    #8ec07c;
+    --white-normal:   #a89984;
+    --white-bright:   #ebdbb2;
+
+    --bg-dark:  var(--black-normal);
+    --bg-light: var(--black-bright);
+    --text-dark: var(--white-normal);
+    --text-light: var(--white-bright);
+    
+    color: var(--text-dark);
+    background-color: var(--bg-dark);
+    font-family: 'Courier New', monospace;
+
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    padding: 2rem;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-light);
+}
+
+a {
+    color: var(--text-light);
+    transition: color 0.2s;
+}
+a:hover {
+    color: var(--text-dark);
+}
+
+strong {
+    color: var(--text-light);
+}

@@ -7,8 +7,8 @@
 ##    READING_TIME in minutes
 
 ## config vars
-wordsPerMinute=250
+wordsPerMinute=200
 
 # first clean special symbols and lines with whitespace
 wordcount=`sed -e 's/[^A-Za-z0-9 ]//g' -e '/^\s*$/d' "$1" | wc -w`
-export READING_TIME=$(expr $(expr $wordcount + $wordsPerMinute) / $wordsPerMinute)
+export READING_TIME=$(expr $(expr $wordcount / $wordsPerMinute) + 1)
