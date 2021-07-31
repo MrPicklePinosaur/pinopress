@@ -33,7 +33,7 @@ endef
 define loop_article
 	for article_file in `ls $(SRC_DIR)`; do
 		. ./$(MODULE_DIR)/md-header "$(SRC_DIR)/$$article_file"
-		envsubst < $(TEMPLATE_DIR)/$(2) | sed -i "/<!-- $(shell echo $(addprefix mount_,$(basename $(basename $(2)))) | tr '[:lower:]' '[:upper:]') -->/r /dev/stdin" "$(1)"
+		envsubst < $(TEMPLATE_DIR)/$(2) | sed -i "/<!-- $(shell echo $(addprefix _mount_,$(basename $(basename $(2)))) | tr '[:lower:]' '[:upper:]') -->/r /dev/stdin" "$(1)"
 	done
 endef
 
@@ -42,42 +42,38 @@ help:
 
 build: $(BUILD_DIR)/rolling.html $(BUILD_DIR)/archive.html $(BUILD_DIR)/feed.xml $(addprefix $(BUILD_DIR)/$(ARTICLE_PATH)/,$(addsuffix .html,$(ARTICLE_LIST)))
 
+# usage: build_page [page_template] [item_template] [display_message]
+define build_page
+	echo "$(3)"
+	$(export_common)
+	cat $(TEMPLATE_DIR)/$(1) > "$@"
+	$(call loop_article,"$@",$(2))
+	envsubst < "$@" | sponge "$@"
+endef
+
 .ONESHELL:
 $(BUILD_DIR)/rolling.html:
-	echo 'building rolling file'
-	$(export_common)
-	cat $(TEMPLATE_DIR)/head.template.html $(TEMPLATE_DIR)/rollingbody.template.html $(TEMPLATE_DIR)/foot.template.html > "$@"
-	$(call loop_article,"$@",rollingitem.template.html)
-	envsubst < "$@" | sponge "$@"
+	$(call build_page,rollingpage.template.html,rollingitem.template.html,building rolling file)
 
 .ONESHELL:
 $(BUILD_DIR)/archive.html:
-	echo 'building archive file'
-	$(export_common)
-	cat $(TEMPLATE_DIR)/head.template.html $(TEMPLATE_DIR)/archivebody.template.html $(TEMPLATE_DIR)/foot.template.html > "$@"
-	$(call loop_article,"$@",archiveitem.template.html)
-	envsubst < "$@" | sponge "$@"
+	$(call build_page,archivepage.template.html,archiveitem.template.html,building archive file)
 
 .ONESHELL:
 $(BUILD_DIR)/feed.xml:
-	echo 'building feed file'
-	$(export_common)
-	cat $(TEMPLATE_DIR)/feed.template.xml > "$@"
-	$(call loop_article,"$@",feeditem.template.xml)
-	envsubst < "$@" | sponge "$@"
+	$(call build_page,feed.template.xml,feeditem.template.xml,building feed file)
 
 .ONESHELL:
 $(BUILD_DIR)/$(ARTICLE_PATH)/%.html: $(SRC_DIR)/%.md
 	echo "parsing $<"
 	$(export_common)
 	$(call export_article,"$<")
-	cat $(TEMPLATE_DIR)/head.template.html > "$@"
+	cat $(TEMPLATE_DIR)/articlepage.template.html > "$@"
 	# module pipeline starts here
-	./$(MODULE_DIR)/md "$<" >> "$@"
+	./$(MODULE_DIR)/md "$<" | sed -i "/<!-- _MOUNT_ARTICLECONTENT -->/r /dev/stdin" "$@"
 	. ./$(MODULE_DIR)/md-header "$<"
 	. ./$(MODULE_DIR)/readingtime "$<"
 	# module pipeline ends here
-	cat $(TEMPLATE_DIR)/foot.template.html >> "$@"
 	envsubst < "$@" | sponge "$@"
 
 clean:

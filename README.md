@@ -54,7 +54,3 @@ pinopress articles are written in an enhanced version of markdown. specification
 
 `$USERLOCAL2` - another user local variable
 
-## mounts
-
-many times, you would like to display a list of html elements somewhere in the page. **pinopress** solves this using mounts. mounts are simply comments that tell pinopress where to append template items.
-
