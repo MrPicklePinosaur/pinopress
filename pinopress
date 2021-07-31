@@ -29,11 +29,23 @@ define export_common
 	export USERGLOBAL2="$(USERGLOBAL2)"
 endef
 
-# usage: loop_article [dest] [template_filename]
-define loop_article
+# usage: build_page [page_template] [item_template] [display_message]
+define build_page
+	echo "$(3)"
+	$(export_common)
+	cat $(TEMPLATE_DIR)/$(1) > "$@"
 	for article_file in `ls $(SRC_DIR)`; do
 		. ./$(MODULE_DIR)/md-header "$(SRC_DIR)/$$article_file"
-		envsubst < $(TEMPLATE_DIR)/$(2) | sed -i "/<!-- $(shell echo $(addprefix _mount_,$(basename $(basename $(2)))) | tr '[:lower:]' '[:upper:]') -->/r /dev/stdin" "$(1)"
+		envsubst < $(TEMPLATE_DIR)/$(2) | sed -i "/<!-- $(shell echo $(addprefix _mount_,$(basename $(basename $(2)))) | tr '[:lower:]' '[:upper:]') -->/r /dev/stdin" "$(@)"
+	done
+	$(call expand_mount,$@)
+	envsubst < "$@" | sponge "$@"
+endef
+
+# usage: expand_mount [filename]
+define expand_mount
+	for mount in `sed -En 's/<!-- MOUNT_(.+) -->/\1/p' "$(1)"`; do
+		sed -i "/<!-- MOUNT_$$mount -->/r $(TEMPLATE_DIR)/`echo $$mount | tr '[:upper:]' '[:lower:]'`.template.html" "$(1)"
 	done
 endef
 
@@ -41,15 +53,6 @@ help:
 	echo 'pinopress help|build|clean'
 
 build: $(BUILD_DIR)/rolling.html $(BUILD_DIR)/archive.html $(BUILD_DIR)/feed.xml $(addprefix $(BUILD_DIR)/$(ARTICLE_PATH)/,$(addsuffix .html,$(ARTICLE_LIST)))
-
-# usage: build_page [page_template] [item_template] [display_message]
-define build_page
-	echo "$(3)"
-	$(export_common)
-	cat $(TEMPLATE_DIR)/$(1) > "$@"
-	$(call loop_article,"$@",$(2))
-	envsubst < "$@" | sponge "$@"
-endef
 
 .ONESHELL:
 $(BUILD_DIR)/rolling.html:
@@ -67,13 +70,13 @@ $(BUILD_DIR)/feed.xml:
 $(BUILD_DIR)/$(ARTICLE_PATH)/%.html: $(SRC_DIR)/%.md
 	echo "parsing $<"
 	$(export_common)
-	$(call export_article,"$<")
 	cat $(TEMPLATE_DIR)/articlepage.template.html > "$@"
 	# module pipeline starts here
 	./$(MODULE_DIR)/md "$<" | sed -i "/<!-- _MOUNT_ARTICLECONTENT -->/r /dev/stdin" "$@"
 	. ./$(MODULE_DIR)/md-header "$<"
 	. ./$(MODULE_DIR)/readingtime "$<"
 	# module pipeline ends here
+	$(call expand_mount,$@)
 	envsubst < "$@" | sponge "$@"
 
 clean:

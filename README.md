@@ -54,3 +54,19 @@ pinopress articles are written in an enhanced version of markdown. specification
 
 `$USERLOCAL2` - another user local variable
 
+## mounts
+
+mounts are the **pinopress** solution to html includes. to include any file from the template directory, use the following syntax:
+```
+<!-- MOUNT_[NAMEOFFILE] -->
+```
+note that the name of file is without any extensions and in all caps. also, mounts are **not** expanded recursively.
+
+**pinopress** also has the following builtin mounts that are used internally, prefixed by an underscore:
+```
+<!-- _MOUNT_ARTICLECONTENT -->
+<!-- _MOUNT_ROLLINGITEM -->
+<!-- _MOUNT_ARCHIVEITEM -->
+<!-- _MOUNT_FEEDITEM -->
+```
+
