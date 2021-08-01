@@ -7,20 +7,22 @@ built in features include markdown generated blog articles, and a rss feed.
 
 ## templates
 
-templates are html snippets that you can customize. these templates are then pieced together to form the final html page. edit them to your liking. they can be found in the `templates/` directory. Here's a brief description of each one:
+templates are html snippets that you can customize. these templates are then pieced together to form the final html page. edit them to your liking. they can be found in the `templates/` directory. Here's a brief description of each one that comes by default:
 
 template          | description
 ------------------|-----------
-head              | html before body
-foot              | html after body
-archivebody       | everything inside body of archive page
-archiveitem       | 
-rollingbody       | everything inside body of rolling page
-rollingitem       |
+archivepage       | html used for the archive page
+archiveitem       | snippet for each list item on archive page
+rollingpage       | html used for rolling page
+rollingitem       | snippet for each rolling item
+feed              | main xml for rss feed
+feeditem          | xml snippet for each entry in feed
+articlepage       | html for each article
+navbar            | sample template for mounts
 
 ## modules
 
-these have not been implemented yet, but modules are shellscripts that are called during the build process that can add extra features.
+modules are shellscripts that are called during the build process that can add extra features.
 
 here are some potential ideas for modules:
 - [ ] syntax highlight for code blocks
